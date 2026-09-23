@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vault</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root {
+  --teal: #00A9A5;
+  --teal-light: #E6F7F6;
+  --ink: #1A1A1A;
+  --sub: #6B6E77;
+  --muted: #9497A0;
+  --line: #ECECEC;
+  --card: #F4F4F4;
+  --bg: #FFFFFF;
+  --positive: #1E9E7B;
+  --negative: #1A1A1A;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #EDEDED;
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+}
+.phone {
+  width: 100%;
+  max-width: 380px;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.screen { flex: 1; padding: 20px 18px 8px; overflow-y: auto; }
+.hidden { display: none; }
+
+/* Home */
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.greeting { font-size: 13px; color: var(--sub); margin: 0 0 10px; }
+.total-label { font-size: 11px; color: var(--muted); letter-spacing: 0.3px; margin: 0 0 3px; }
+.total { font-size: 30px; font-weight: 600; color: var(--ink); margin: 0; letter-spacing: -0.4px; }
+.avatar { width: 40px; height: 40px; border-radius: 20px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+
+.actions { display: flex; justify-content: space-between; margin-bottom: 24px; }
+.action-item { text-align: center; width: 66px; background: none; border: none; cursor: pointer; font-family: inherit; }
+.action-icon { width: 46px; height: 46px; border-radius: 14px; background: var(--teal-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 19px; }
+.action-label { font-size: 11px; color: var(--sub); }
+
+h2.section { font-size: 15px; font-weight: 600; color: var(--ink); margin: 0 0 10px; }
+.section-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.see-all { font-size: 12px; color: var(--teal); background: none; border: none; cursor: pointer; font-family: inherit; }
+
+.accounts-row { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 24px; padding-bottom: 2px; }
+.acc-card { min-width: 158px; border-radius: 14px; padding: 14px; flex-shrink: 0; cursor: pointer; border: none; text-align: left; font-family: inherit; }
+.acc-card.primary { background: var(--teal); }
+.acc-card.plain { background: var(--card); }
+.acc-type { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; margin: 0 0 14px; }
+.acc-card.primary .acc-type { color: #D9F5F3; }
+.acc-card.plain .acc-type { color: var(--teal); }
+.acc-name { font-size: 12px; margin: 0 0 4px; }
+.acc-card.primary .acc-name { color: #CDEFEC; }
+.acc-card.plain .acc-name { color: var(--sub); }
+.acc-balance { font-size: 18px; font-weight: 600; margin: 0; }
+.acc-card.primary .acc-balance { color: #fff; }
+.acc-card.plain .acc-balance { color: var(--ink); }
+
+.tx-list { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
+.tx-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.tx-row:last-child { border-bottom: none; }
+.tx-avatar { width: 32px; height: 32px; border-radius: 16px; background: var(--teal-light); color: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; margin-right: 12px; flex-shrink: 0; }
+.tx-mid { flex: 1; min-width: 0; }
+.tx-merchant { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tx-meta { font-size: 11px; color: var(--muted); margin: 2px 0 0; }
+.tx-amount { font-size: 13px; font-weight: 600; color: var(--negative); white-space: nowrap; }
+.tx-amount.positive { color: var(--positive); }
+
+/* Activity */
+.chip-row { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 2px; }
+.chip { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-size: 12px; color: var(--sub); white-space: nowrap; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+.chip.active { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 600; }
+
+/* Transfer */
+.field-label { font-size: 11px; font-weight: 600; letter-spacing: 0.3px; color: var(--muted); margin: 18px 0 8px; text-transform: uppercase; }
+.field-label:first-child { margin-top: 0; }
+.option-list { display: flex; flex-direction: column; gap: 8px; }
+.option-btn { display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1.5px solid transparent; border-radius: 14px; padding: 12px 14px; cursor: pointer; font-family: inherit; text-align: left; }
+.option-btn.active { border-color: var(--teal); background: var(--teal-light); }
+.opt-title { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; }
+.opt-sub { font-size: 11px; color: var(--muted); margin: 2px 0 0; }
+.dot { width: 9px; height: 9px; border-radius: 5px; background: var(--teal); flex-shrink: 0; }
+.amount-row { display: flex; align-items: center; background: var(--card); border-radius: 14px; padding: 0 14px; margin-top: 4px; }
+.currency-sign { font-size: 22px; color: var(--sub); margin-right: 6px; }
+.amount-input { flex: 1; border: none; background: none; font-size: 22px; font-weight: 600; color: var(--ink); padding: 14px 0; outline: none; font-family: inherit; min-width: 0; }
+.error-text { font-size: 12px; color: #C0392B; margin: 6px 0 0; }
+.submit-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 600; margin-top: 28px; cursor: pointer; font-family: inherit; }
+.submit-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+
+/* Profile */
+.profile-header { text-align: center; margin: 10px 0 24px; }
+.profile-avatar { width: 68px; height: 68px; border-radius: 34px; background: var(--teal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; margin: 0 auto 12px; }
+.profile-name { font-size: 18px; font-weight: 600; color: var(--ink); margin: 0; }
+.profile-email { font-size: 12px; color: var(--muted); margin: 3px 0 0; }
+.settings-card { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 20px; }
+.settings-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink); }
+.settings-row:last-child { border-bottom: none; }
+.settings-row span.icon { font-size: 16px; width: 18px; text-align: center; color: var(--sub); }
+.settings-row span.chev { margin-left: auto; color: var(--muted); }
+
+.method-row { display: flex; gap: 8px; margin-bottom: 4px; }
+.method-btn { flex: 1; padding: 10px 4px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--card); font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.method-btn.active { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
+.method-icon { font-size: 16px; }
+.phone-input { width: 100%; background: var(--card); border: none; border-radius: 12px; padding: 13px 14px; font-size: 14px; color: var(--ink); font-family: inherit; outline: none; margin-bottom: 8px; }
+.phone-input::placeholder { color: var(--muted); }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 24px; }
+.modal-overlay.hidden { display: none; }
+.modal-card { background: #fff; border-radius: 20px; padding: 26px 22px; width: 100%; max-width: 320px; text-align: center; }
+.modal-title { font-size: 16px; font-weight: 600; color: var(--ink); margin: 0 0 4px; }
+.modal-sub { font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+.confirm-rows { text-align: left; background: var(--card); border-radius: 12px; padding: 4px 14px; margin-bottom: 20px; }
+.confirm-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.confirm-row:last-child { border-bottom: none; }
+.confirm-row .k { color: var(--muted); }
+.confirm-row .v { color: var(--ink); font-weight: 500; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-btn { flex: 1; padding: 13px; border-radius: 12px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.modal-btn.cancel { background: var(--card); color: var(--ink); }
+.modal-btn.confirm { background: var(--teal); color: #fff; }
+
+.face-ring { width: 110px; height: 110px; border-radius: 55px; border: 3px solid var(--line); margin: 4px auto 18px; display: flex; align-items: center; justify-content: center; font-size: 44px; position: relative; }
+.face-ring.scanning { border-color: var(--teal); animation: pulse 1.1s ease-in-out infinite; }
+.face-ring.verified { border-color: var(--positive); }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,169,165,0.35); } 50% { box-shadow: 0 0 0 10px rgba(0,169,165,0); } }
+.face-status { font-size: 13px; font-weight: 500; color: var(--sub); min-height: 18px; }
+/* Security screen */
+.sec-section { margin-bottom: 26px; }
+.sec-title { font-size: 13px; font-weight: 600; color: var(--ink); margin: 0 0 4px; }
+.sec-desc { font-size: 12px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; background: var(--card); border-radius: 14px; padding: 14px; }
+.toggle-row .t-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+.toggle-row .t-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.switch { width: 44px; height: 26px; border-radius: 13px; background: var(--line); position: relative; border: none; cursor: pointer; flex-shrink: 0; }
+.switch.on { background: var(--teal); }
+.switch .knob { width: 22px; height: 22px; border-radius: 11px; background: #fff; position: absolute; top: 2px; left: 2px; transition: left 0.15s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+.switch.on .knob { left: 20px; }
+.pin-inputs { display: flex; gap: 8px; margin-bottom: 8px; }
+.small-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 6px; }
+.small-btn.ghost { background: var(--card); color: var(--ink); }
+.pin-status { font-size: 11px; color: var(--positive); margin: 8px 0 0; }
+textarea.call-input { width: 100%; background: var(--card); border: none; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--ink); font-family: inherit; outline: none; resize: none; min-height: 70px; margin-bottom: 10px; }
+.risk-card { border-radius: 14px; padding: 14px; margin-top: 12px; border: 1.5px solid; }
+.risk-card.low { background: var(--teal-light); border-color: var(--teal); }
+.risk-card.medium { background: #FFF6E0; border-color: #D9A441; }
+.risk-card.high { background: #FDEAEA; border-color: #D9534F; }
+.risk-title { font-size: 13px; font-weight: 700; margin: 0 0 6px; }
+.risk-card.low .risk-title { color: var(--teal); }
+.risk-card.medium .risk-title { color: #A9761E; }
+.risk-card.high .risk-title { color: #C0392B; }
+.risk-flags { font-size: 11px; color: var(--sub); margin: 6px 0 0; line-height: 1.6; }
+.log-item { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.log-item:last-child { border-bottom: none; }
+.log-dot { width: 8px; height: 8px; border-radius: 4px; background: #D9534F; margin-top: 5px; flex-shrink: 0; }
+.log-text { font-size: 12px; color: var(--ink); }
+.log-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.empty-log { font-size: 12px; color: var(--muted); text-align: center; padding: 14px 0; }
+
+.scam-banner { background: #FDEAEA; border: 1.5px solid #D9534F; border-radius: 14px; padding: 13px 14px; margin-bottom: 16px; }
+.scam-banner-title { font-size: 13px; font-weight: 700; color: #C0392B; margin: 0 0 4px; }
+.scam-banner-text { font-size: 11px; color: #8a3a36; margin: 0 0 10px; line-height: 1.5; }
+.scam-check { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: #8a3a36; }
+.scam-check input { margin-top: 2px; }
+
+.pin-field { width: 100%; text-align: center; letter-spacing: 10px; font-size: 22px; background: var(--card); border: none; border-radius: 12px; padding: 14px; font-family: inherit; outline: none; margin-bottom: 6px; }
+.pin-error { font-size: 12px; color: #C0392B; min-height: 16px; margin: 0 0 10px; }
+.link-btn { background: none; border: none; color: var(--teal); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 12px; }
+
+.tab-btn { flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--muted); font-family: inherit; }
+.tab-btn.active { color: var(--teal); }
+.tab-icon { font-size: 18px; }
+.tab-text { font-size: 10px; }
+
+.toast { position: absolute; left: 18px; right: 18px; bottom: 84px; background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 12px; font-size: 13px; text-align: center; transform: translateY(120%); transition: transform 0.25s ease; z-index: 10; }
+.toast.show { transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <div class="screen" id="screen-home">
+    <div class="header">
+      <div>
+        <p class="greeting" id="greeting">Good day, Jordan</p>
+        <p class="total-label">TOTAL BALANCE</p>
+        <p class="total" id="totalBalance">R 0.00</p>
+      </div>
+      <div class="avatar">JR</div>
+    </div>
+    <div class="actions">
+      <button class="action-item" onclick="goTo('transfer')"><div class="action-icon">⇄</div><div class="action-label">Transfer</div></button>
+      <button class="action-item"><div class="action-icon">🧾</div><div class="action-label">Pay bill</div></button>
+      <button class="action-item"><div class="action-icon">📷</div><div class="action-label">Deposit</div></button>
+      <button class="action-item"><div class="action-icon">💳</div><div class="action-label">Card</div></button>
+    </div>
+    <h2 class="section">Accounts</h2>
+    <div class="accounts-row" id="accountsRow"></div>
+    <div class="section-row">
+      <h2 class="section" style="margin:0">Recent activity</h2>
+      <button class="see-all" onclick="goTo('activity')">See all</button>
+    </div>
+    <div class="tx-list" id="recentTxList"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-activity">
+    <h2 class="section" style="font-size:22px;margin-bottom:16px">Activity</h2>
+    <div class="chip-row" id="chipRow"></div>
+    <div class="tx-list" id="fullTxList"></div>
+  </div>
+
+  <div class="screen hidden" id="screen-transfer">
+    <h2 class="section" style="font-size:22px;margin-bottom:4px">Transfer</h2>
+    <p class="field-label">From</p>
+    <div class="option-list" id="fromList"></div>
+
+    <p class="field-label">Pay via</p>
+    <div class="method-row" id="methodRow"></div>
+
+    <div id="scamBanner" class="hidden"></div>
+
+    <p class="field-label" id="toLabel">To</p>
+    <div class="option-list hidden" id="payeeList"></div>
+    <div id="phoneSection" class="hidden">
+      <input class="phone-input" id="recipientName" placeholder="Recipient name">
+      <input class="phone-input" id="recipientPhone" placeholder="Cellphone number" inputmode="tel">
+    </div>
+
+    <p class="field-label">Amount</p>
+    <div class="amount-row">
+      <span class="currency-sign">R</span>
+      <input class="amount-input" id="amountInput" inputmode="decimal" placeholder="0.00">
+    </div>
+    <p class="error-text hidden" id="errorText">Exceeds available balance</p>
+    <button class="submit-btn" id="submitBtn" onclick="openConfirm()">Send transfer</button>
+  </div>
+
+  <div class="screen hidden" id="screen-profile">
+    <div class="profile-header">
+      <div class="profile-avatar">JR</div>
+      <p class="profile-name">Jordan Reyes</p>
+      <p class="profile-email">jordan.reyes@example.com</p>
+    </div>
+    <div class="settings-card">
+      <div class="settings-row"><span class="icon">👤</span>Personal details<span class="chev">›</span></div>
+      <div class="settings-row" onclick="goTo('security')" style="cursor:pointer"><span class="icon">🔒</span>Security & login<span class="chev">›</span></div>
+      <div class="settings-row"><span class="icon">🔗</span>Linked accounts<span class="chev">›</span></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-row"><span class="icon">🔔</span>Notifications<span class="chev">›</span></div>
+      <div class="settings-row"><span class="icon">📄</span>Statements<span class="chev">›</span></div>
+      <div class="settings-row"><span class="icon">❓</span>Help center<span class="chev">›</span></div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="screen-security">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button class="link-btn" style="margin:0;font-size:18px" onclick="goTo('profile')">←</button>
+      <h2 class="section" style="margin:0;font-size:20px">Security</h2>
+    </div>
+
+    <div class="sec-section">
+      <p class="sec-title">Face ID confirmation</p>
+      <p class="sec-desc">Every payment needs your face — there's no PIN fallback. Knowing someone's PIN is never enough on its own to move their money.</p>
+      <div class="toggle-row">
+        <div><div class="t-label">Face ID required for payments</div><div class="t-sub">Always on — can't be disabled</div></div>
+        <button class="switch on" style="cursor:default;opacity:0.6" disabled><div class="knob"></div></button>
+      </div>
+    </div>
+
+    <div class="sec-section">
+      <p class="sec-title">Duress signal</p>
+      <p class="sec-desc">Being forced to pay someone? During the face scan, press and hold the icon instead of just waiting. The app will look like the payment went through — but nothing is sent, and it's flagged here instead.</p>
+    </div>
+
+    <div class="sec-section">
+      <p class="sec-title">Scam Shield</p>
+      <p class="sec-desc">Paste in what a caller told you (this is a demo — a real version would connect to your phone's call-screening permissions, which need to be granted at the OS level, not from a webpage). We'll scan it for known scam patterns.</p>
+      <textarea class="call-input" id="callText" placeholder="e.g. &quot;This is your bank's fraud department, we need you to confirm a payment to secure your account, open your banking app now...&quot;"></textarea>
+      <button class="small-btn" onclick="analyzeCall()">Analyze call</button>
+      <div id="riskResult"></div>
+    </div>
+
+    <div class="sec-section">
+      <p class="sec-title">Security alerts</p>
+      <p class="sec-desc">A log of anything Vault blocked or flagged on your behalf.</p>
+      <div id="securityLogList"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay hidden" id="confirmModal">
+    <div class="modal-card">
+      <p class="modal-title">Confirm transfer</p>
+      <p class="modal-sub">Double-check the details before sending</p>
+      <div class="confirm-rows" id="confirmRows"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeConfirm()">Cancel</button>
+        <button class="modal-btn confirm" onclick="startFaceScan()">Confirm with Face ID</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="faceModal">
+    <div class="modal-card">
+      <p class="modal-title">Verify it's you</p>
+      <p class="modal-sub">Face scan required to authorize this transfer</p>
+      <div class="face-ring scanning" id="faceRing">🙂</div>
+      <p class="face-status" id="faceStatus">Scanning face…</p>
+      <p style="font-size:10px;color:var(--muted);margin:10px 0 0">Press and hold the icon if this payment isn't voluntary.</p>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="goTo('home')"><span class="tab-icon">🏠</span><span class="tab-text">Home</span></button>
+    <button class="tab-btn" data-tab="activity" onclick="goTo('activity')"><span class="tab-icon">☰</span><span class="tab-text">Activity</span></button>
+    <button class="tab-btn" data-tab="transfer" onclick="goTo('transfer')"><span class="tab-icon">⇄</span><span class="tab-text">Transfer</span></button>
+    <button class="tab-btn" data-tab="profile" onclick="goTo('profile')"><span class="tab-icon">👤</span><span class="tab-text">Profile</span></button>
+  </div>
+</div>
+
+<script>
+let accounts = [
+  { id: 'acc_checking', name: 'Everyday Checking', type: 'checking', label: 'CHECKING', balance: 482317, last4: '4471' },
+  { id: 'acc_savings', name: 'High-Yield Savings', type: 'savings', label: 'SAVINGS', balance: 1875042, last4: '9012' },
+  { id: 'acc_credit', name: 'Vault Rewards Card', type: 'credit', label: 'CREDIT', balance: -64280, last4: '2238' },
+];
+
+let transactions = [
+  { id: 't1', accountId: 'acc_checking', merchant: 'Blue Bottle Coffee', category: 'Food & Drink', amount: -650, date: 'Sep 22', pending: true },
+  { id: 't2', accountId: 'acc_checking', merchant: 'Payroll — Acme Corp', category: 'Income', amount: 328000, date: 'Sep 20' },
+  { id: 't3', accountId: 'acc_credit', merchant: 'Woolworths', category: 'Groceries', amount: -8734, date: 'Sep 19' },
+  { id: 't4', accountId: 'acc_checking', merchant: 'Meridian Apts — Rent', category: 'Housing', amount: -210000, date: 'Sep 18' },
+  { id: 't5', accountId: 'acc_credit', merchant: 'Kulula Airlines', category: 'Travel', amount: -48210, date: 'Sep 17' },
+  { id: 't6', accountId: 'acc_savings', merchant: 'Interest Payment', category: 'Income', amount: 4218, date: 'Sep 16' },
+  { id: 't7', accountId: 'acc_checking', merchant: 'City Power', category: 'Utilities', amount: -12480, date: 'Sep 15' },
+  { id: 't8', accountId: 'acc_credit', merchant: 'The Corner Bistro', category: 'Food & Drink', amount: -5620, date: 'Sep 14' },
+];
+
+const payees = [
+  { id: 'p1', name: 'Sam Whitfield', detail: 'Vault · checking' },
+  { id: 'p2', name: 'Priya Nair', detail: 'External bank' },
+  { id: 'p3', name: 'Meridian Apartments', detail: 'Rent payee' },
+  { id: 'p4', name: 'Marcus Chen', detail: 'Vault · savings' },
+];
+
+let fromId = 'acc_checking';
+let payeeId = 'p1';
+let transferMethod = 'vault';
+let activityFilter = 'all';
+
+let scamAlertActive = false;
+let scamAlertFlags = [];
+let securityLog = [];
+
+const scamPatterns = [
+  { phrase: 'one time pin', weight: 3 }, { phrase: 'otp', weight: 3 },
+  { phrase: 'verification code', weight: 3 }, { phrase: 'open your banking app', weight: 3 },
+  { phrase: 'open your app', weight: 3 }, { phrase: 'confirm the payment', weight: 2 },
+  { phrase: 'share your pin', weight: 3 }, { phrase: 'read me the code', weight: 3 },
+  { phrase: 'account has been compromised', weight: 3 }, { phrase: 'account will be blocked', weight: 3 },
+  { phrase: 'account will be suspended', weight: 3 }, { phrase: 'urgent action', weight: 2 },
+  { phrase: 'fraud department', weight: 2 }, { phrase: 'we are from the bank', weight: 2 },
+  { phrase: 'verify your account', weight: 2 }, { phrase: 'refund', weight: 1 },
+  { phrase: 'block your card', weight: 2 }, { phrase: 'unauthorised transaction', weight: 2 },
+  { phrase: 'unauthorized transaction', weight: 2 }, { phrase: 'click the link', weight: 2 },
+  { phrase: 'remote access', weight: 3 }, { phrase: 'anydesk', weight: 3 }, { phrase: 'teamviewer', weight: 3 },
+  { phrase: "don't tell anyone", weight: 3 }, { phrase: 'keep this confidential', weight: 2 },
+  { phrase: 'security check', weight: 1 }, { phrase: 'reference number', weight: 1 },
+];
+
+const methods = [
+  { id: 'vault', label: 'Vault', icon: '🏦' },
+  { id: 'payshap', label: 'PayShap', icon: '⚡' },
+  { id: 'ewallet', label: 'eWallet', icon: '📱' },
+];
+
+function rand(cents, showSign) {
+  const val = Math.abs(cents) / 100;
+  const formatted = 'R ' + val.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (showSign) return (cents < 0 ? '-' : '+') + formatted;
+  return (cents < 0 ? '-' : '') + formatted;
+}
+
+function initials(name) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+}
+
+function goTo(tab) {
+  ['home', 'activity', 'transfer', 'profile', 'security'].forEach(t => {
+    document.getElementById('screen-' + t).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'activity') renderActivity();
+  if (tab === 'transfer') renderTransfer();
+  if (tab === 'security') renderSecurity();
+}
+
+function renderHome() {
+  const total = accounts.filter(a => a.type !== 'credit').reduce((s, a) => s + a.balance, 0);
+  document.getElementById('totalBalance').textContent = rand(total);
+
+  const row = document.getElementById('accountsRow');
+  row.innerHTML = accounts.map((a, i) => `
+    <button class="acc-card ${i === 0 ? 'primary' : 'plain'}" onclick="goTo('activity')">
+      <p class="acc-type">${a.label}</p>
+      <p class="acc-name">${a.name}</p>
+      <p class="acc-balance">${rand(a.balance)}</p>
+    </button>
+  `).join('');
+
+  const recent = [...transactions].slice(0, 4);
+  document.getElementById('recentTxList').innerHTML = recent.map(txRow).join('');
+}
+
+function txRow(t) {
+  const positive = t.amount > 0;
+  return `
+    <div class="tx-row">
+      <div class="tx-avatar">${initials(t.merchant)}</div>
+      <div class="tx-mid">
+        <p class="tx-merchant">${t.merchant}</p>
+        <p class="tx-meta">${t.category} · ${t.date}${t.pending ? ' · Pending' : ''}</p>
+      </div>
+      <div class="tx-amount ${positive ? 'positive' : ''}">${rand(t.amount, true)}</div>
+    </div>
+  `;
+}
+
+function renderActivity() {
+  document.getElementById('chipRow').innerHTML = ['all', ...accounts.map(a => a.id)].map(id => {
+    const label = id === 'all' ? 'All' : accounts.find(a => a.id === id).name.split(' ')[0];
+    return `<button class="chip ${activityFilter === id ? 'active' : ''}" onclick="setFilter('${id}')">${label}</button>`;
+  }).join('');
+  const filtered = activityFilter === 'all' ? transactions : transactions.filter(t => t.accountId === activityFilter);
+  document.getElementById('fullTxList').innerHTML = filtered.map(txRow).join('') || '<p style="font-size:13px;color:var(--muted);padding:16px 0;text-align:center">No transactions yet.</p>';
+}
+
+function setFilter(id) {
+  activityFilter = id;
+  renderActivity();
+}
+
+function renderTransfer() {
+  const transferable = accounts.filter(a => a.type !== 'credit');
+  document.getElementById('fromList').innerHTML = transferable.map(a => `
+    <button class="option-btn ${fromId === a.id ? 'active' : ''}" onclick="setFrom('${a.id}')">
+      <div><p class="opt-title">${a.name}</p><p class="opt-sub">${rand(a.balance)} available</p></div>
+      ${fromId === a.id ? '<div class="dot"></div>' : ''}
+    </button>
+  `).join('');
+
+  document.getElementById('methodRow').innerHTML = methods.map(m => `
+    <button class="method-btn ${transferMethod === m.id ? 'active' : ''}" onclick="setMethod('${m.id}')">
+      <span class="method-icon">${m.icon}</span>${m.label}
+    </button>
+  `).join('');
+
+  const banner = document.getElementById('scamBanner');
+  if (scamAlertActive) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `
+      <div class="scam-banner">
+        <p class="scam-banner-title">⚠️ Recent call flagged as high risk</p>
+        <p class="scam-banner-text">Scam Shield detected patterns matching a known scam script in a recent call. If someone on a call told you to make this payment, stop and hang up — call us directly to verify instead.</p>
+        <label class="scam-check">
+          <input type="checkbox" id="scamAck" onchange="checkAmount()">
+          I was not instructed by anyone on a call to make this payment
+        </label>
+      </div>
+    `;
+  } else {
+    banner.classList.add('hidden');
+    banner.innerHTML = '';
+  }
+
+  const isVault = transferMethod === 'vault';
+  document.getElementById('toLabel').textContent = isVault ? 'To' : 'To (cellphone number)';
+  document.getElementById('payeeList').classList.toggle('hidden', !isVault);
+  document.getElementById('phoneSection').classList.toggle('hidden', isVault);
+
+  document.getElementById('payeeList').innerHTML = payees.map(p => `
+    <button class="option-btn ${payeeId === p.id ? 'active' : ''}" onclick="setPayee('${p.id}')">
+      <div><p class="opt-title">${p.name}</p><p class="opt-sub">${p.detail}</p></div>
+      ${payeeId === p.id ? '<div class="dot"></div>' : ''}
+    </button>
+  `).join('');
+
+  checkAmount();
+}
+
+function renderSecurity() {
+  document.getElementById('securityLogList').innerHTML = securityLog.length
+    ? securityLog.map(l => `
+        <div class="log-item">
+          <div class="log-dot"></div>
+          <div><div class="log-text">${l.message}</div><div class="log-time">${l.time}</div></div>
+        </div>
+      `).join('')
+    : '<p class="empty-log">Nothing flagged yet.</p>';
+}
+
+function analyzeCall() {
+  const text = document.getElementById('callText').value.toLowerCase();
+  const matched = scamPatterns.filter(p => text.includes(p.phrase));
+  const score = matched.reduce((s, p) => s + p.weight, 0);
+  const risk = score >= 6 ? 'high' : score >= 2 ? 'medium' : 'low';
+
+  const resultEl = document.getElementById('riskResult');
+  const titles = { low: '✅ Low risk', medium: '⚠️ Medium risk — be cautious', high: '🚨 High risk — likely a scam' };
+  resultEl.innerHTML = `
+    <div class="risk-card ${risk}">
+      <p class="risk-title">${titles[risk]}</p>
+      ${matched.length ? `<p class="risk-flags">Flagged phrases: ${matched.map(m => '"' + m.phrase + '"').join(', ')}</p>` : '<p class="risk-flags">No known scam patterns detected in this text.</p>'}
+    </div>
+  `;
+
+  if (risk === 'high' && text.trim().length > 0) {
+    scamAlertActive = true;
+    scamAlertFlags = matched.map(m => m.phrase);
+    addSecurityLog(`Scam Shield flagged a call as high risk (${matched.length} pattern${matched.length === 1 ? '' : 's'} matched). Extra verification will be required on your next transfer.`);
+    showToast('High risk detected — your next transfer will need extra verification');
+  }
+}
+
+function addSecurityLog(message) {
+  securityLog.unshift({ message, time: new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' }) });
+  renderSecurity();
+}
+
+function setFrom(id) { fromId = id; renderTransfer(); }
+function setPayee(id) { payeeId = id; renderTransfer(); }
+function setMethod(id) { transferMethod = id; renderTransfer(); }
+
+function currentRecipient() {
+  if (transferMethod === 'vault') {
+    const p = payees.find(p => p.id === payeeId);
+    return { name: p.name, detail: p.detail };
+  }
+  const name = document.getElementById('recipientName').value.trim();
+  const phone = document.getElementById('recipientPhone').value.trim();
+  const methodLabel = methods.find(m => m.id === transferMethod).label;
+  return { name: name || null, detail: phone ? `${methodLabel} · ${phone}` : null, phone };
+}
+
+function checkAmount() {
+  const from = accounts.find(a => a.id === fromId);
+  const amountCents = Math.round((parseFloat(document.getElementById('amountInput').value || '0')) * 100);
+  const exceeds = amountCents > from.balance;
+  document.getElementById('errorText').classList.toggle('hidden', !exceeds || amountCents === 0);
+
+  const r = currentRecipient();
+  const recipientValid = transferMethod === 'vault' ? true : !!(r.name && r.phone);
+  const scamAckOk = !scamAlertActive || (document.getElementById('scamAck') && document.getElementById('scamAck').checked);
+
+  document.getElementById('submitBtn').disabled = amountCents <= 0 || exceeds || !recipientValid || !scamAckOk;
+  return amountCents;
+}
+
+document.getElementById('amountInput').addEventListener('input', checkAmount);
+document.getElementById('recipientName').addEventListener('input', checkAmount);
+document.getElementById('recipientPhone').addEventListener('input', checkAmount);
+
+function openConfirm() {
+  const amountCents = checkAmount();
+  const from = accounts.find(a => a.id === fromId);
+  const r = currentRecipient();
+  if (amountCents <= 0 || amountCents > from.balance || !r.name) return;
+
+  const methodLabel = methods.find(m => m.id === transferMethod).label;
+  document.getElementById('confirmRows').innerHTML = `
+    <div class="confirm-row"><span class="k">From</span><span class="v">${from.name}</span></div>
+    <div class="confirm-row"><span class="k">To</span><span class="v">${r.name}</span></div>
+    <div class="confirm-row"><span class="k">Via</span><span class="v">${methodLabel}</span></div>
+    <div class="confirm-row"><span class="k">Amount</span><span class="v">${rand(amountCents)}</span></div>
+  `;
+  document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.add('hidden');
+}
+
+let holdTimer = null;
+let holdTriggered = false;
+const DURESS_HOLD_MS = 1200; // press-and-hold this long during the scan to signal duress
+
+function startFaceScan() {
+  closeConfirm();
+  holdTriggered = false;
+  const ring = document.getElementById('faceRing');
+  const status = document.getElementById('faceStatus');
+  ring.className = 'face-ring scanning';
+  ring.textContent = '🙂';
+  status.textContent = 'Scanning face…';
+  document.getElementById('faceModal').classList.remove('hidden');
+
+  const startHold = () => { holdTimer = setTimeout(() => { holdTriggered = true; }, DURESS_HOLD_MS); };
+  const cancelHold = () => clearTimeout(holdTimer);
+  ring.onpointerdown = startHold;
+  ring.onpointerup = cancelHold;
+  ring.onpointerleave = cancelHold;
+
+  setTimeout(() => {
+    ring.onpointerdown = null;
+    ring.onpointerup = null;
+    ring.onpointerleave = null;
+    ring.className = 'face-ring verified';
+    ring.textContent = '✓';
+    status.textContent = 'Face verified';
+    setTimeout(() => {
+      document.getElementById('faceModal').classList.add('hidden');
+      if (holdTriggered) {
+        silentDuressBlock();
+      } else {
+        finalizeSend();
+      }
+    }, 700);
+  }, 1500);
+}
+
+// Looks identical to a normal successful transfer, but nothing is actually
+// sent — the balance is untouched and the attempt is logged instead.
+function silentDuressBlock() {
+  const amountCents = checkAmount();
+  const from = accounts.find(a => a.id === fromId);
+  const r = currentRecipient();
+
+  addSecurityLog(`🚨 Duress signal detected during Face ID — a ${rand(amountCents)} transfer to ${r.name || 'an unknown recipient'} from ${from.name} was silently blocked, not sent.`);
+
+  document.getElementById('amountInput').value = '';
+  document.getElementById('recipientName').value = '';
+  document.getElementById('recipientPhone').value = '';
+  showToast(`Sent ${rand(amountCents)} to ${r.name}`); // deliberately looks like success
+  goTo('home');
+}
+
+function finalizeSend() {
+  const amountCents = checkAmount();
+  const from = accounts.find(a => a.id === fromId);
+  const r = currentRecipient();
+  const methodLabel = methods.find(m => m.id === transferMethod).label;
+  if (amountCents <= 0 || amountCents > from.balance || !r.name) return;
+
+  from.balance -= amountCents;
+  transactions.unshift({
+    id: 'tx_' + Date.now(),
+    accountId: from.id,
+    merchant: r.name,
+    category: transferMethod === 'vault' ? 'Transfer' : methodLabel,
+    amount: -amountCents,
+    date: 'Just now',
+  });
+
+  document.getElementById('amountInput').value = '';
+  document.getElementById('recipientName').value = '';
+  document.getElementById('recipientPhone').value = '';
+  scamAlertActive = false;
+  showToast(`Sent ${rand(amountCents)} to ${r.name} via ${methodLabel}`);
+  renderHome();
+  goTo('home');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+renderHome();
+renderSecurity();
+</script>
+</body>
+</html>
