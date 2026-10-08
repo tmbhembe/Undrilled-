@@ -33,13 +33,33 @@
 <button class="action-item" onclick="goTo('transfer')"><div class="action-icon">⇄</div><div class="action-label">Transfer</div></button>
 <button class="action-item"><div class="action-icon">🧾</div><div class="action-label">Pay bill</div></button>
 <button class="action-item"><div class="action-icon">📷</div><div class="action-label">Deposit</div></button>
-<button class="action-item"><div class="action-icon">💳</div><div class="action-label">Card</div></button>
+<button class="action-item"><div class="action-icon">💳</div><div class="action-label">Card</div></button><button class="action-item" onclick="goTo('interpreter')"><div class="action-icon">🎧</div><div class="action-label">Interpreter</div></button>
 </div>
 <h2 class="section">Accounts</h2><div class="accounts-row" id="accountsRow"></div>
 <div class="section-row"><h2 class="section" style="margin:0">Recent activity</h2><button class="see-all" onclick="goTo('activity')">See all</button></div><div class="tx-list" id="recentTxList"></div>
 </div>
 <div class="screen hidden" id="screen-activity"><h2 class="section" style="font-size:22px;margin-bottom:16px">Activity</h2><div class="chip-row" id="chipRow"></div><div class="tx-list" id="fullTxList"></div></div>
 <div class="screen hidden" id="screen-transfer"><h2 class="section" style="font-size:22px;margin-bottom:4px">Transfer</h2><p class="field-label">From</p><div class="option-list" id="fromList"></div><p class="field-label">Pay via</p><div class="method-row" id="methodRow"></div><div id="scamBanner" class="hidden"></div><p class="field-label" id="toLabel">To</p><div class="option-list hidden" id="payeeList"></div><div id="phoneSection" class="hidden"><input class="phone-input" id="recipientName" placeholder="Recipient name"><input class="phone-input" id="recipientPhone" placeholder="Cellphone number" inputmode="tel"></div><p class="field-label">Amount</p><div class="amount-row"><span class="currency-sign">R</span><input class="amount-input" id="amountInput" inputmode="decimal" placeholder="0.00"></div><p class="error-text hidden" id="errorText">Exceeds available balance</p><button class="submit-btn" id="submitBtn" onclick="openConfirm()">Send transfer</button></div>
+<div class="screen hidden" id="screen-interpreter">
+<h2 class="section" style="font-size:22px;margin-bottom:4px">AI Interpreter</h2>
+<p class="field-label">Python backend</p>
+<input class="phone-input" id="backendUrl" placeholder="https://your-python-backend.example.com" value="">
+<p class="field-label">From</p>
+<div class="method-row">
+<button class="method-btn active" id="interpEn" onclick="setInterpSource('en')"><span class="method-icon">🇬🇧</span>English</button>
+<button class="method-btn" id="interpZu" onclick="setInterpSource('zu')"><span class="method-icon">🇿🇦</span>isiZulu</button>
+</div>
+<p class="field-label">To</p>
+<div class="method-row">
+<button class="method-btn active" id="interpTargetZu" onclick="setInterpTarget('zu')"><span class="method-icon">🇿🇦</span>isiZulu</button>
+<button class="method-btn" id="interpTargetEn" onclick="setInterpTarget('en')"><span class="method-icon">🇬🇧</span>English</button>
+</div>
+<p class="field-label">Speech</p>
+<textarea class="call-input" id="interpText" rows="5" placeholder="Type or paste speech here..."></textarea>
+<label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);margin-top:8px"><input type="checkbox" id="interpSpeak" checked> Speak the translation</label>
+<button class="small-btn" onclick="runInterpreter()">Translate with Python</button>
+<div id="interpResult" style="margin-top:16px"></div>
+</div>
 <div class="screen hidden" id="screen-profile"><div class="profile-header"><div class="profile-avatar">JR</div><p class="profile-name">Jordan Reyes</p><p class="profile-email">jordan.reyes@example.com</p></div><div class="settings-card"><div class="settings-row"><span class="icon">👤</span>Personal details<span class="chev">›</span></div><div class="settings-row" onclick="goTo('security')" style="cursor:pointer"><span class="icon">🔒</span>Security & login<span class="chev">›</span></div><div class="settings-row"><span class="icon">🔗</span>Linked accounts<span class="chev">›</span></div></div><div class="settings-card"><div class="settings-row"><span class="icon">🔔</span>Notifications<span class="chev">›</span></div><div class="settings-row"><span class="icon">📄</span>Statements<span class="chev">›</span></div><div class="settings-row"><span class="icon">❓</span>Help center<span class="chev">›</span></div></div></div>
 <div class="screen hidden" id="screen-security"><div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="link-btn" style="margin:0;font-size:18px" onclick="goTo('profile')">←</button><h2 class="section" style="margin:0;font-size:20px">Security</h2></div><div class="sec-section"><p class="sec-title">Face ID confirmation</p><p class="sec-desc">Every payment needs your face — there's no PIN fallback. Knowing someone's PIN is never enough on its own to move their money.</p><div class="toggle-row"><div><div class="t-label">Face ID required for payments</div><div class="t-sub">Always on — can't be disabled</div></div><button class="switch" disabled><div class="knob"></div></button></div></div><div class="sec-section"><p class="sec-title">Duress signal</p><p class="sec-desc">During the face scan, press and hold the icon to signal that a payment isn't voluntary. The demo blocks it and records the event.</p></div><div class="sec-section"><p class="sec-title">Scam Shield</p><p class="sec-desc">Paste what a caller told you. The demo scans it for known scam patterns.</p><textarea class="call-input" id="callText" placeholder="Example: Your account has been compromised. Open your banking app and confirm the payment..."></textarea><button class="small-btn" onclick="analyzeCall()">Analyze call</button><div id="riskResult"></div></div><div class="sec-section"><p class="sec-title">Security alerts</p><p class="sec-desc">A log of anything Vault blocked or flagged.</p><div id="securityLogList"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -56,7 +76,7 @@ let fromId='acc_checking',payeeId='p1',transferMethod='vault',activityFilter='al
 const scamPatterns=[['one time pin',3],['otp',3],['verification code',3],['open your banking app',3],['confirm the payment',2],['share your pin',3],['read me the code',3],['account has been compromised',3],['account will be blocked',3],['urgent action',2],['fraud department',2],['verify your account',2],['block your card',2],['click the link',2],['remote access',3],['anydesk',3],['teamviewer',3],["don't tell anyone",3]];
 function rand(c,sign){let v=Math.abs(c)/100,s='R '+v.toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});return sign?(c<0?'-':'+')+s:(c<0?'-':'')+s}
 function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
-function goTo(tab){['home','activity','transfer','profile','security'].forEach(t=>document.getElementById('screen-'+t).classList.toggle('hidden',t!==tab));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='activity')renderActivity();if(tab==='transfer')renderTransfer();if(tab==='security')renderSecurity()}
+function goTo(tab){['home','activity','transfer','interpreter','profile','security'].forEach(t=>document.getElementById('screen-'+t).classList.toggle('hidden',t!==tab));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='activity')renderActivity();if(tab==='transfer')renderTransfer();if(tab==='interpreter')loadBackendUrl();if(tab==='security')renderSecurity()}
 function txRow(t){return `<div class="tx-row"><div class="tx-avatar">${initials(t.merchant)}</div><div class="tx-mid"><p class="tx-merchant">${t.merchant}</p><p class="tx-meta">${t.category} · ${t.date}${t.pending?' · Pending':''}</p></div><div class="tx-amount ${t.amount>0?'positive':''}">${rand(t.amount,true)}</div></div>`}
 function renderHome(){let total=accounts.filter(a=>a.type!=='credit').reduce((s,a)=>s+a.balance,0);document.getElementById('totalBalance').textContent=rand(total);document.getElementById('accountsRow').innerHTML=accounts.map((a,i)=>`<button class="acc-card ${i===0?'primary':'plain'}" onclick="goTo('activity')"><p class="acc-type">${a.label}</p><p class="acc-name">${a.name}</p><p class="acc-balance">${rand(a.balance)}</p></button>`).join('');document.getElementById('recentTxList').innerHTML=transactions.slice(0,4).map(txRow).join('')}
 function renderActivity(){document.getElementById('chipRow').innerHTML=['all',...accounts.map(a=>a.id)].map(id=>`<button class="chip ${activityFilter===id?'active':''}" onclick="setFilter('${id}')">${id==='all'?'All':accounts.find(a=>a.id===id).name.split(' ')[0]}</button>`).join('');let f=activityFilter==='all'?transactions:transactions.filter(t=>t.accountId===activityFilter);document.getElementById('fullTxList').innerHTML=f.map(txRow).join('')||'<p style="font-size:13px;color:var(--muted);padding:16px;text-align:center">No transactions yet.</p>'}
@@ -75,6 +95,33 @@ let holdTimer=null,holdTriggered=false;
 function startFaceScan(){closeConfirm();holdTriggered=false;let ring=document.getElementById('faceRing'),status=document.getElementById('faceStatus');ring.className='face-ring scanning';ring.textContent='🙂';status.textContent='Scanning face…';document.getElementById('faceModal').classList.remove('hidden');const start=()=>{holdTimer=setTimeout(()=>holdTriggered=true,1200)},cancel=()=>clearTimeout(holdTimer);ring.onpointerdown=start;ring.onpointerup=cancel;ring.onpointerleave=cancel;setTimeout(()=>{ring.onpointerdown=null;ring.onpointerup=null;ring.onpointerleave=null;ring.className='face-ring verified';ring.textContent='✓';status.textContent='Face verified';setTimeout(()=>{document.getElementById('faceModal').classList.add('hidden');holdTriggered?silentDuressBlock():finalizeSend()},700)},1500)}
 function silentDuressBlock(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient();addSecurityLog('🚨 Duress signal detected during Face ID — transfer silently blocked and not sent.');document.getElementById('amountInput').value='';showToast('Transfer approved');goTo('home')}
 function finalizeSend(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient(),label=methods.find(m=>m.id===transferMethod).label;if(amount<=0||amount>from.balance||!r.name)return;from.balance-=amount;transactions.unshift({id:'tx_'+Date.now(),accountId:from.id,merchant:r.name,category:transferMethod==='vault'?'Transfer':label,amount:-amount,date:'Just now'});document.getElementById('amountInput').value='';document.getElementById('recipientName').value='';document.getElementById('recipientPhone').value='';scamAlertActive=false;showToast('Sent '+rand(amount)+' to '+r.name+' via '+label);renderHome();goTo('home')}
+let interpSource='en',interpTarget='zu';
+function loadBackendUrl(){document.getElementById('backendUrl').value=localStorage.getItem('undrilledBackendUrl')||''}
+function setInterpSource(lang){interpSource=lang;document.getElementById('interpEn').classList.toggle('active',lang==='en');document.getElementById('interpZu').classList.toggle('active',lang==='zu')}
+function setInterpTarget(lang){interpTarget=lang;document.getElementById('interpTargetZu').classList.toggle('active',lang==='zu');document.getElementById('interpTargetEn').classList.toggle('active',lang==='en')}
+async function runInterpreter(){
+  const backend=document.getElementById('backendUrl').value.trim().replace(/\/$/,'');
+  const text=document.getElementById('interpText').value.trim();
+  const speak=document.getElementById('interpSpeak').checked;
+  const result=document.getElementById('interpResult');
+  if(!backend){result.innerHTML='<div class="risk-card medium"><p class="risk-title">Backend URL required</p><p class="risk-flags">Deploy the Python backend, then paste its URL here.</p></div>';return}
+  if(!text){result.innerHTML='<div class="risk-card medium"><p class="risk-title">Enter speech</p><p class="risk-flags">Type or paste the sentence you want to interpret.</p></div>';return}
+  localStorage.setItem('undrilledBackendUrl',backend);
+  result.innerHTML='<div class="risk-card low"><p class="risk-title">⏳ Processing...</p><p class="risk-flags">Sending the text to the Undrilled Python backend.</p></div>';
+  try{
+    const response=await fetch(backend+'/api/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source:interpSource,target:interpTarget,speak})});
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||'Backend request failed');
+    result.innerHTML='<div class="risk-card low"><p class="risk-title">Translation</p><p class="risk-flags" style="font-size:14px;color:var(--ink)">'+escapeHtml(data.translated_text)+'</p></div>';
+    if(data.audio_base64){
+      const audio=new Audio('data:'+(data.audio_mime||'audio/wav')+';base64,'+data.audio_base64);
+      audio.play().catch(()=>{});
+    }
+  }catch(error){
+    result.innerHTML='<div class="risk-card high"><p class="risk-title">Backend error</p><p class="risk-flags">'+escapeHtml(error.message)+'</p></div>';
+  }
+}
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function showToast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
 renderHome();renderSecurity();
 </script>
