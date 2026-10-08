@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: undrilled-python-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: AZURE_SPEECH_KEY
+        sync: false
+      - key: AZURE_SPEECH_REGION
+        value: eastus
+      - key: AZURE_TRANSLATOR_KEY
+        sync: false
+      - key: AZURE_TRANSLATOR_REGION
+        value: southafricanorth
+      - key: AZURE_TRANSLATOR_ENDPOINT
+        value: https://api.cognitive.microsofttranslator.com
