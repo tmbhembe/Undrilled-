@@ -23,24 +23,66 @@
 .tabbar{position:absolute;bottom:0;left:0;right:0;height:76px;padding:9px 10px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;z-index:20;box-shadow:0 -5px 20px rgba(20,40,45,.06)}.tab-btn{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--muted);font-family:inherit}.tab-btn.active{color:var(--teal-dark)}.tab-icon{font-size:18px}.tab-text{font-size:10px;font-weight:600}.tab-btn[data-tab=transfer]{position:relative}.tab-btn[data-tab=transfer] .tab-icon{width:38px;height:38px;margin-top:-20px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,169,165,.3);border:4px solid #fff}
 .toast{position:absolute;left:18px;right:18px;bottom:88px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:13px;font-size:12px;text-align:center;transform:translateY(120%);transition:transform .25s ease;z-index:30}.toast.show{transform:translateY(0)}
 @media(min-width:700px){body{padding:30px}.phone{min-height:calc(100vh - 60px);height:calc(100vh - 60px);border-radius:28px;overflow:hidden}.tabbar{position:absolute}.screen{padding-bottom:100px}}
+
+.ai-security-card{background:linear-gradient(145deg,#102b2c,#174445);color:#fff;border-radius:19px;padding:16px;margin:0 0 24px;box-shadow:0 10px 24px rgba(20,40,45,.12)}
+.ai-security-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ai-security-title{font-size:14px;font-weight:800;margin:0}.ai-security-sub{font-size:10px;color:#c9e5e4;margin:4px 0 0;line-height:1.45}
+.ai-status{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;white-space:nowrap}.ai-dot{width:8px;height:8px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 4px rgba(57,217,138,.12)}
+.ai-security-actions{display:flex;gap:8px;margin-top:13px}.ai-mini{flex:1;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;border-radius:11px;padding:9px 7px;font-size:10px;font-weight:700;font-family:inherit;cursor:pointer}
+.permission-box{background:var(--teal-light);border:1px solid #bde9e7;border-radius:14px;padding:12px;font-size:11px;color:var(--sub);line-height:1.5;margin-bottom:12px}
+.permission-box strong{color:var(--ink)}.permission-btn{margin-top:9px;width:100%;border:0;border-radius:11px;padding:10px;background:var(--teal);color:#fff;font-weight:700;font-family:inherit}
+.chat-window{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;min-height:260px;max-height:380px;overflow:auto}
+.chat-msg{max-width:88%;padding:10px 12px;border-radius:13px;margin:7px 0;font-size:12px;line-height:1.45}
+.chat-msg.user{margin-left:auto;background:var(--teal);color:#fff}.chat-msg.ai{background:var(--card);color:var(--ink)}
+.chat-compose{display:flex;gap:7px;margin-top:9px}.chat-compose input{flex:1;min-width:0;background:var(--card);border:0;border-radius:12px;padding:12px;font-family:inherit;outline:0}.chat-send{width:44px;border:0;border-radius:12px;background:var(--teal);color:#fff;font-size:16px}
+.lang-row{display:flex;gap:7px;margin:9px 0}.lang-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-size:10px;font-weight:700;font-family:inherit}.lang-btn.active{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark)}
+.call-protection{background:var(--card);border-radius:14px;padding:13px;margin-top:10px}.call-protection-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 </style>
 </head>
 <body>
 <div class="phone" id="phone">
 <div class="screen" id="screen-home">
 <div class="header"><div><p class="greeting">Good day, Jordan</p><p class="total-label">TOTAL BALANCE</p><p class="total" id="totalBalance">R 0.00</p></div><div class="avatar">JR</div></div>
+
+<div class="ai-security-card">
+  <div class="ai-security-top">
+    <div><p class="ai-security-title">🛡️ AI Security</p><p class="ai-security-sub">Scam protection is built into your payment security.</p></div>
+    <div class="ai-status"><span class="ai-dot"></span><span id="aiStatusText">READY</span></div>
+  </div>
+  <div class="ai-security-actions">
+    <button class="ai-mini" onclick="goTo('chat')">💬 AI Assistant</button>
+    <button class="ai-mini" onclick="goTo('security')">🛡️ Security</button>
+  </div>
+</div>
 <div class="actions">
 <button class="action-item" onclick="goTo('transfer')"><div class="action-icon">⇄</div><div class="action-label">Transfer</div></button>
 <button class="action-item"><div class="action-icon">🧾</div><div class="action-label">Pay bill</div></button>
 <button class="action-item"><div class="action-icon">📷</div><div class="action-label">Deposit</div></button>
-<button class="action-item"><div class="action-icon">💳</div><div class="action-label">Card</div></button><button class="action-item" onclick="goTo('interpreter')"><div class="action-icon">🎧</div><div class="action-label">Interpreter</div></button>
+<button class="action-item"><div class="action-icon">💳</div><div class="action-label">Card</div></button><button class="action-item" onclick="goTo('chat')"><div class="action-icon">💬</div><div class="action-label">AI Assistant</div></button>
 </div>
 <h2 class="section">Accounts</h2><div class="accounts-row" id="accountsRow"></div>
 <div class="section-row"><h2 class="section" style="margin:0">Recent activity</h2><button class="see-all" onclick="goTo('activity')">See all</button></div><div class="tx-list" id="recentTxList"></div>
 </div>
 <div class="screen hidden" id="screen-activity"><h2 class="section" style="font-size:22px;margin-bottom:16px">Activity</h2><div class="chip-row" id="chipRow"></div><div class="tx-list" id="fullTxList"></div></div>
 <div class="screen hidden" id="screen-transfer"><h2 class="section" style="font-size:22px;margin-bottom:4px">Transfer</h2><p class="field-label">From</p><div class="option-list" id="fromList"></div><p class="field-label">Pay via</p><div class="method-row" id="methodRow"></div><div id="scamBanner" class="hidden"></div><p class="field-label" id="toLabel">To</p><div class="option-list hidden" id="payeeList"></div><div id="phoneSection" class="hidden"><input class="phone-input" id="recipientName" placeholder="Recipient name"><input class="phone-input" id="recipientPhone" placeholder="Cellphone number" inputmode="tel"></div><p class="field-label">Amount</p><div class="amount-row"><span class="currency-sign">R</span><input class="amount-input" id="amountInput" inputmode="decimal" placeholder="0.00"></div><p class="error-text hidden" id="errorText">Exceeds available balance</p><button class="submit-btn" id="submitBtn" onclick="openConfirm()">Send transfer</button></div>
-<div class="screen hidden" id="screen-interpreter">
+
+<div class="screen hidden" id="screen-chat">
+<h2 class="section" style="font-size:22px;margin-bottom:4px">AI Banking Assistant</h2>
+<p class="sec-desc">Type in your language. Voice input can be connected to the same speech service when permission is granted.</p>
+<div class="lang-row">
+<button class="lang-btn active" id="chatEn" onclick="setChatLang('en')">English</button>
+<button class="lang-btn" id="chatZu" onclick="setChatLang('zu')">isiZulu</button>
+</div>
+<div class="chat-window" id="chatWindow">
+<div class="chat-msg ai">Sawubona. I can help explain banking and security questions. I will not move money for you.</div>
+</div>
+<div class="chat-compose">
+<input id="chatInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="chat-send" onclick="sendChat()">➤</button>
+</div>
+<button class="small-btn" style="margin-top:10px" onclick="startVoiceChat()">🎙️ Use my voice</button>
+<div id="voiceStatus" class="sec-desc" style="margin-top:8px"></div>
+</div><div class="screen hidden" id="screen-interpreter">
 <h2 class="section" style="font-size:22px;margin-bottom:4px">AI Interpreter</h2>
 <p class="field-label">Python backend</p>
 <input class="phone-input" id="backendUrl" placeholder="https://your-python-backend.example.com" value="">
@@ -61,7 +103,13 @@
 <div id="interpResult" style="margin-top:16px"></div>
 </div>
 <div class="screen hidden" id="screen-profile"><div class="profile-header"><div class="profile-avatar">JR</div><p class="profile-name">Jordan Reyes</p><p class="profile-email">jordan.reyes@example.com</p></div><div class="settings-card"><div class="settings-row"><span class="icon">👤</span>Personal details<span class="chev">›</span></div><div class="settings-row" onclick="goTo('security')" style="cursor:pointer"><span class="icon">🔒</span>Security & login<span class="chev">›</span></div><div class="settings-row"><span class="icon">🔗</span>Linked accounts<span class="chev">›</span></div></div><div class="settings-card"><div class="settings-row"><span class="icon">🔔</span>Notifications<span class="chev">›</span></div><div class="settings-row"><span class="icon">📄</span>Statements<span class="chev">›</span></div><div class="settings-row"><span class="icon">❓</span>Help center<span class="chev">›</span></div></div></div>
-<div class="screen hidden" id="screen-security"><div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="link-btn" style="margin:0;font-size:18px" onclick="goTo('profile')">←</button><h2 class="section" style="margin:0;font-size:20px">Security</h2></div><div class="sec-section"><p class="sec-title">Face ID confirmation</p><p class="sec-desc">Every payment needs your face — there's no PIN fallback. Knowing someone's PIN is never enough on its own to move their money.</p><div class="toggle-row"><div><div class="t-label">Face ID required for payments</div><div class="t-sub">Always on — can't be disabled</div></div><button class="switch" disabled><div class="knob"></div></button></div></div><div class="sec-section"><p class="sec-title">Duress signal</p><p class="sec-desc">During the face scan, press and hold the icon to signal that a payment isn't voluntary. The demo blocks it and records the event.</p></div><div class="sec-section"><p class="sec-title">Scam Shield</p><p class="sec-desc">Paste what a caller told you. The demo scans it for known scam patterns.</p><textarea class="call-input" id="callText" placeholder="Example: Your account has been compromised. Open your banking app and confirm the payment..."></textarea><button class="small-btn" onclick="analyzeCall()">Analyze call</button><div id="riskResult"></div></div><div class="sec-section"><p class="sec-title">Security alerts</p><p class="sec-desc">A log of anything Vault blocked or flagged.</p><div id="securityLogList"></div></div></div>
+<div class="screen hidden" id="screen-security"><div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="link-btn" style="margin:0;font-size:18px" onclick="goTo('profile')">←</button><h2 class="section" style="margin:0;font-size:20px">Security</h2></div><div class="sec-section"><p class="sec-title">Face ID confirmation</p><p class="sec-desc">Every payment needs your face — there's no PIN fallback. Knowing someone's PIN is never enough on its own to move their money.</p><div class="toggle-row"><div><div class="t-label">Face ID required for payments</div><div class="t-sub">Always on — can't be disabled</div></div><button class="switch" disabled><div class="knob"></div></button></div></div><div class="sec-section"><p class="sec-title">Duress signal</p><p class="sec-desc">During the face scan, press and hold the icon to signal that a payment isn't voluntary. The demo blocks it and records the event.</p></div><div class="sec-section">
+<p class="sec-title">AI Call Protection</p>
+<p class="sec-desc">The AI can analyse a call only after you give permission. This web prototype cannot secretly access normal cellular-call audio; real call-audio integration needs a native phone/VoIP integration and OS permission.</p>
+<div class="permission-box"><strong id="permissionTitle">Call protection permission: Not granted</strong><br><span id="permissionText">Nothing is being listened to by this web page.</span><button class="permission-btn" onclick="requestCallPermission()">Enable call protection</button></div>
+<div class="call-protection"><div class="call-protection-row"><div><div class="t-label">Security engine</div><div class="t-sub">High-risk scam signals block payments</div></div><span class="pin-status">● Active</span></div></div>
+</div>
+<div class="sec-section"><p class="sec-title">Scam Shield</p><p class="sec-desc">Paste what a caller told you. The demo scans it for known scam patterns.</p><textarea class="call-input" id="callText" placeholder="Example: Your account has been compromised. Open your banking app and confirm the payment..."></textarea><button class="small-btn" onclick="analyzeCall()">Analyze call</button><div id="riskResult"></div></div><div class="sec-section"><p class="sec-title">Security alerts</p><p class="sec-desc">A log of anything Vault blocked or flagged.</p><div id="securityLogList"></div></div></div>
 <div class="toast" id="toast"></div>
 <div class="modal-overlay hidden" id="confirmModal"><div class="modal-card"><p class="modal-title">Confirm transfer</p><p class="modal-sub">Double-check the details before sending</p><div class="confirm-rows" id="confirmRows"></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeConfirm()">Cancel</button><button class="modal-btn confirm" onclick="startFaceScan()">Confirm with Face ID</button></div></div></div>
 <div class="modal-overlay hidden" id="faceModal"><div class="modal-card"><p class="modal-title">Verify it's you</p><p class="modal-sub">Face scan required to authorize this transfer</p><div class="face-ring scanning" id="faceRing">🙂</div><p class="face-status" id="faceStatus">Scanning face…</p><p style="font-size:10px;color:var(--muted);margin:10px 0 0">Press and hold the icon if this payment isn't voluntary.</p></div></div>
@@ -76,26 +124,75 @@ let fromId='acc_checking',payeeId='p1',transferMethod='vault',activityFilter='al
 const scamPatterns=[['one time pin',3],['otp',3],['verification code',3],['open your banking app',3],['confirm the payment',2],['share your pin',3],['read me the code',3],['account has been compromised',3],['account will be blocked',3],['urgent action',2],['fraud department',2],['verify your account',2],['block your card',2],['click the link',2],['remote access',3],['anydesk',3],['teamviewer',3],["don't tell anyone",3]];
 function rand(c,sign){let v=Math.abs(c)/100,s='R '+v.toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});return sign?(c<0?'-':'+')+s:(c<0?'-':'')+s}
 function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
-function goTo(tab){['home','activity','transfer','interpreter','profile','security'].forEach(t=>document.getElementById('screen-'+t).classList.toggle('hidden',t!==tab));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='activity')renderActivity();if(tab==='transfer')renderTransfer();if(tab==='interpreter')loadBackendUrl();if(tab==='security')renderSecurity()}
+function goTo(tab){['home','activity','transfer','interpreter','chat','profile','security'].forEach(t=>document.getElementById('screen-'+t).classList.toggle('hidden',t!==tab));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='activity')renderActivity();if(tab==='transfer')renderTransfer();if(tab==='interpreter')loadBackendUrl();if(tab==='security')renderSecurity()}
 function txRow(t){return `<div class="tx-row"><div class="tx-avatar">${initials(t.merchant)}</div><div class="tx-mid"><p class="tx-merchant">${t.merchant}</p><p class="tx-meta">${t.category} · ${t.date}${t.pending?' · Pending':''}</p></div><div class="tx-amount ${t.amount>0?'positive':''}">${rand(t.amount,true)}</div></div>`}
 function renderHome(){let total=accounts.filter(a=>a.type!=='credit').reduce((s,a)=>s+a.balance,0);document.getElementById('totalBalance').textContent=rand(total);document.getElementById('accountsRow').innerHTML=accounts.map((a,i)=>`<button class="acc-card ${i===0?'primary':'plain'}" onclick="goTo('activity')"><p class="acc-type">${a.label}</p><p class="acc-name">${a.name}</p><p class="acc-balance">${rand(a.balance)}</p></button>`).join('');document.getElementById('recentTxList').innerHTML=transactions.slice(0,4).map(txRow).join('')}
 function renderActivity(){document.getElementById('chipRow').innerHTML=['all',...accounts.map(a=>a.id)].map(id=>`<button class="chip ${activityFilter===id?'active':''}" onclick="setFilter('${id}')">${id==='all'?'All':accounts.find(a=>a.id===id).name.split(' ')[0]}</button>`).join('');let f=activityFilter==='all'?transactions:transactions.filter(t=>t.accountId===activityFilter);document.getElementById('fullTxList').innerHTML=f.map(txRow).join('')||'<p style="font-size:13px;color:var(--muted);padding:16px;text-align:center">No transactions yet.</p>'}
 function setFilter(id){activityFilter=id;renderActivity()}
-function renderTransfer(){let tr=accounts.filter(a=>a.type!=='credit');document.getElementById('fromList').innerHTML=tr.map(a=>`<button class="option-btn ${fromId===a.id?'active':''}" onclick="setFrom('${a.id}')"><div><p class="opt-title">${a.name}</p><p class="opt-sub">${rand(a.balance)} available</p></div>${fromId===a.id?'<div class="dot"></div>':''}</button>`).join('');document.getElementById('methodRow').innerHTML=methods.map(m=>`<button class="method-btn ${transferMethod===m.id?'active':''}" onclick="setMethod('${m.id}')"><span class="method-icon">${m.icon}</span>${m.label}</button>`).join('');let b=document.getElementById('scamBanner');if(scamAlertActive){b.classList.remove('hidden');b.innerHTML='<div class="scam-banner"><p class="scam-banner-title">⚠️ Recent call flagged as high risk</p><p class="scam-banner-text">Scam Shield detected a high-risk pattern. If someone on a call told you to make this payment, stop and verify independently.</p><label class="scam-check"><input type="checkbox" id="scamAck" onchange="checkAmount()"> I was not instructed by anyone on a call to make this payment</label></div>'}else{b.classList.add('hidden');b.innerHTML=''}let vault=transferMethod==='vault';document.getElementById('toLabel').textContent=vault?'To':'To (cellphone number)';document.getElementById('payeeList').classList.toggle('hidden',!vault);document.getElementById('phoneSection').classList.toggle('hidden',vault);document.getElementById('payeeList').innerHTML=payees.map(p=>`<button class="option-btn ${payeeId===p.id?'active':''}" onclick="setPayee('${p.id}')"><div><p class="opt-title">${p.name}</p><p class="opt-sub">${p.detail}</p></div>${payeeId===p.id?'<div class="dot"></div>':''}</button>`).join('');checkAmount()}
+function renderTransfer(){let tr=accounts.filter(a=>a.type!=='credit');document.getElementById('fromList').innerHTML=tr.map(a=>`<button class="option-btn ${fromId===a.id?'active':''}" onclick="setFrom('${a.id}')"><div><p class="opt-title">${a.name}</p><p class="opt-sub">${rand(a.balance)} available</p></div>${fromId===a.id?'<div class="dot"></div>':''}</button>`).join('');document.getElementById('methodRow').innerHTML=methods.map(m=>`<button class="method-btn ${transferMethod===m.id?'active':''}" onclick="setMethod('${m.id}')"><span class="method-icon">${m.icon}</span>${m.label}</button>`).join('');let b=document.getElementById('scamBanner');if(scamAlertActive){b.classList.remove('hidden');b.innerHTML='<div class="scam-banner"><p class="scam-banner-title">⚠️ Recent call flagged as high risk</p><p class="scam-banner-text">Scam Shield detected a high-risk pattern. If someone on a call told you to make this payment, stop and verify independently.</p><label class="scam-check"><input type="checkbox" id="scamAck" disabled> Payment blocked while the scam alert is active</label></div>'}else{b.classList.add('hidden');b.innerHTML=''}let vault=transferMethod==='vault';document.getElementById('toLabel').textContent=vault?'To':'To (cellphone number)';document.getElementById('payeeList').classList.toggle('hidden',!vault);document.getElementById('phoneSection').classList.toggle('hidden',vault);document.getElementById('payeeList').innerHTML=payees.map(p=>`<button class="option-btn ${payeeId===p.id?'active':''}" onclick="setPayee('${p.id}')"><div><p class="opt-title">${p.name}</p><p class="opt-sub">${p.detail}</p></div>${payeeId===p.id?'<div class="dot"></div>':''}</button>`).join('');checkAmount()}
 function renderSecurity(){document.getElementById('securityLogList').innerHTML=securityLog.length?securityLog.map(l=>`<div class="log-item"><div class="log-dot"></div><div><div class="log-text">${l.message}</div><div class="log-time">${l.time}</div></div></div>`).join(''):'<p class="empty-log">Nothing flagged yet.</p>'}
-function analyzeCall(){let text=document.getElementById('callText').value.toLowerCase(),matched=scamPatterns.filter(p=>text.includes(p[0])),score=matched.reduce((s,p)=>s+p[1],0),risk=score>=6?'high':score>=2?'medium':'low';document.getElementById('riskResult').innerHTML=`<div class="risk-card ${risk}"><p class="risk-title">${risk==='high'?'🚨 High risk — likely a scam':risk==='medium'?'⚠️ Medium risk — be cautious':'✅ Low risk'}</p>${matched.length?'<p class="risk-flags">Flagged phrases: '+matched.map(m=>'“'+m[0]+'”').join(', ')+'</p>':'<p class="risk-flags">No known scam patterns detected.</p>'}</div>`;if(risk==='high'&&text.trim()){scamAlertActive=true;addSecurityLog('Scam Shield flagged a call as high risk. Extra verification is required on the next transfer.');showToast('High risk detected — extra verification required')}}
+async function analyzeCall(){
+  const raw=document.getElementById('callText').value.trim();
+  if(!raw){showToast('Add a call transcript first');return}
+  const text=raw.toLowerCase();
+  const matched=scamPatterns.filter(p=>text.includes(p[0]));
+  const score=matched.reduce((s,p)=>s+p[1],0);
+  const risk=score>=6?'high':score>=2?'medium':'low';
+  document.getElementById('riskResult').innerHTML=`<div class="risk-card ${risk}"><p class="risk-title">${risk==='high'?'🚨 High risk — payment protection activated':risk==='medium'?'⚠️ Medium risk — be cautious':'✅ Low risk'}</p>${matched.length?'<p class="risk-flags">Flagged phrases: '+matched.map(m=>'“'+m[0]+'”').join(', ')+'</p>':'<p class="risk-flags">No known scam patterns detected.</p>'}</div>`;
+  if(risk==='high'){
+    scamAlertActive=true;
+    addSecurityLog('🚨 AI Security detected a possible financial scam. Payments are temporarily blocked.');
+    document.getElementById('aiStatusText').textContent='PAYMENTS BLOCKED';
+    showToast('Possible scam detected — payments blocked');
+    renderTransfer();
+    return;
+  }
+  document.getElementById('aiStatusText').textContent=risk==='medium'?'CAUTION':'READY';
+}
 function addSecurityLog(message){securityLog.unshift({message,time:new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})});renderSecurity()}
 function setFrom(id){fromId=id;renderTransfer()}function setPayee(id){payeeId=id;renderTransfer()}function setMethod(id){transferMethod=id;renderTransfer()}
 function currentRecipient(){if(transferMethod==='vault'){let p=payees.find(p=>p.id===payeeId);return{name:p.name,detail:p.detail}}let name=document.getElementById('recipientName').value.trim(),phone=document.getElementById('recipientPhone').value.trim(),label=methods.find(m=>m.id===transferMethod).label;return{name:name||null,detail:phone?label+' · '+phone:null,phone}}
-function checkAmount(){let from=accounts.find(a=>a.id===fromId),amount=Math.round(parseFloat(document.getElementById('amountInput').value||'0')*100),exceeds=amount>from.balance;document.getElementById('errorText').classList.toggle('hidden',!exceeds||amount===0);let r=currentRecipient(),valid=transferMethod==='vault'||!!(r.name&&r.phone),ack=!scamAlertActive||(document.getElementById('scamAck')&&document.getElementById('scamAck').checked);document.getElementById('submitBtn').disabled=amount<=0||exceeds||!valid||!ack;return amount}
+function checkAmount(){let from=accounts.find(a=>a.id===fromId),amount=Math.round(parseFloat(document.getElementById('amountInput').value||'0')*100),exceeds=amount>from.balance;document.getElementById('errorText').classList.toggle('hidden',!exceeds||amount===0);let r=currentRecipient(),valid=transferMethod==='vault'||!!(r.name&&r.phone);document.getElementById('submitBtn').disabled=amount<=0||exceeds||!valid||scamAlertActive;return amount}
 document.getElementById('amountInput').addEventListener('input',checkAmount);document.getElementById('recipientName').addEventListener('input',checkAmount);document.getElementById('recipientPhone').addEventListener('input',checkAmount);
 function openConfirm(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient();if(amount<=0||amount>from.balance||!r.name)return;let label=methods.find(m=>m.id===transferMethod).label;document.getElementById('confirmRows').innerHTML=`<div class="confirm-row"><span class="k">From</span><span class="v">${from.name}</span></div><div class="confirm-row"><span class="k">To</span><span class="v">${r.name}</span></div><div class="confirm-row"><span class="k">Via</span><span class="v">${label}</span></div><div class="confirm-row"><span class="k">Amount</span><span class="v">${rand(amount)}</span></div>`;document.getElementById('confirmModal').classList.remove('hidden')}
 function closeConfirm(){document.getElementById('confirmModal').classList.add('hidden')}
 let holdTimer=null,holdTriggered=false;
 function startFaceScan(){closeConfirm();holdTriggered=false;let ring=document.getElementById('faceRing'),status=document.getElementById('faceStatus');ring.className='face-ring scanning';ring.textContent='🙂';status.textContent='Scanning face…';document.getElementById('faceModal').classList.remove('hidden');const start=()=>{holdTimer=setTimeout(()=>holdTriggered=true,1200)},cancel=()=>clearTimeout(holdTimer);ring.onpointerdown=start;ring.onpointerup=cancel;ring.onpointerleave=cancel;setTimeout(()=>{ring.onpointerdown=null;ring.onpointerup=null;ring.onpointerleave=null;ring.className='face-ring verified';ring.textContent='✓';status.textContent='Face verified';setTimeout(()=>{document.getElementById('faceModal').classList.add('hidden');holdTriggered?silentDuressBlock():finalizeSend()},700)},1500)}
 function silentDuressBlock(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient();addSecurityLog('🚨 Duress signal detected during Face ID — transfer silently blocked and not sent.');document.getElementById('amountInput').value='';showToast('Transfer approved');goTo('home')}
-function finalizeSend(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient(),label=methods.find(m=>m.id===transferMethod).label;if(amount<=0||amount>from.balance||!r.name)return;from.balance-=amount;transactions.unshift({id:'tx_'+Date.now(),accountId:from.id,merchant:r.name,category:transferMethod==='vault'?'Transfer':label,amount:-amount,date:'Just now'});document.getElementById('amountInput').value='';document.getElementById('recipientName').value='';document.getElementById('recipientPhone').value='';scamAlertActive=false;showToast('Sent '+rand(amount)+' to '+r.name+' via '+label);renderHome();goTo('home')}
+function finalizeSend(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient(),label=methods.find(m=>m.id===transferMethod).label;if(amount<=0||amount>from.balance||!r.name)return;from.balance-=amount;transactions.unshift({id:'tx_'+Date.now(),accountId:from.id,merchant:r.name,category:transferMethod==='vault'?'Transfer':label,amount:-amount,date:'Just now'});document.getElementById('amountInput').value='';document.getElementById('recipientName').value='';document.getElementById('recipientPhone').value='';scamAlertActive=false;document.getElementById('aiStatusText').textContent='READY';showToast('Sent '+rand(amount)+' to '+r.name+' via '+label);renderHome();goTo('home')}
 let interpSource='en',interpTarget='zu';
+
+let chatLang='en';
+let callPermissionGranted=false;
+function setChatLang(lang){chatLang=lang;document.getElementById('chatEn').classList.toggle('active',lang==='en');document.getElementById('chatZu').classList.toggle('active',lang==='zu')}
+function addChatMessage(text,kind){const w=document.getElementById('chatWindow');const d=document.createElement('div');d.className='chat-msg '+kind;d.textContent=text;w.appendChild(d);w.scrollTop=w.scrollHeight}
+async function sendChat(){
+  const input=document.getElementById('chatInput'),text=input.value.trim();if(!text)return;
+  addChatMessage(text,'user');input.value='';
+  const backend=(localStorage.getItem('undrilledBackendUrl')||'').replace(/\/$/,'');
+  if(!backend){addChatMessage(chatLang==='zu'?'Ngicela uqale ngokufaka i-Python backend URL ku-AI Interpreter.':'Please connect the Python backend first in AI Interpreter.','ai');return}
+  try{
+    const r=await fetch(backend+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,language:chatLang})});
+    const data=await r.json();if(!r.ok)throw new Error(data.error||'Chat request failed');
+    addChatMessage(data.reply,'ai');
+  }catch(e){addChatMessage('AI connection error: '+e.message,'ai')}
+}
+async function requestCallPermission(){
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('Microphone permission is not available in this browser.');
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+    callPermissionGranted=true;
+    document.getElementById('permissionTitle').textContent='Call protection permission: Granted';
+    document.getElementById('permissionText').textContent='Microphone permission was granted. This web prototype still cannot read a normal cellular call unless the phone OS/native integration provides that audio.';
+    showToast('Permission granted');
+  }catch(e){document.getElementById('permissionText').textContent='Permission was not granted: '+e.message}
+}
+async function startVoiceChat(){
+  const status=document.getElementById('voiceStatus');
+  if(!callPermissionGranted){status.textContent='Grant microphone permission in Security first.';return}
+  status.textContent='Voice input is ready for native speech integration. For this web prototype, use the text box.';
+}
 function loadBackendUrl(){document.getElementById('backendUrl').value=localStorage.getItem('undrilledBackendUrl')||''}
 function setInterpSource(lang){interpSource=lang;document.getElementById('interpEn').classList.toggle('active',lang==='en');document.getElementById('interpZu').classList.toggle('active',lang==='zu')}
 function setInterpTarget(lang){interpTarget=lang;document.getElementById('interpTargetZu').classList.toggle('active',lang==='zu');document.getElementById('interpTargetEn').classList.toggle('active',lang==='en')}
@@ -123,7 +220,7 @@ async function runInterpreter(){
 }
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function showToast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
-renderHome();renderSecurity();
+renderHome();renderSecurity();document.getElementById('aiStatusText').textContent=scamAlertActive?'PAYMENTS BLOCKED':'READY';
 </script>
 </body>
 </html>
