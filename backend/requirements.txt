@@ -1,0 +1,5 @@
+Flask>=3.0,<4
+flask-cors>=4.0,<7
+requests>=2.31,<3
+azure-cognitiveservices-speech>=1.40,<2
+gunicorn>=22,<24
