@@ -46,7 +46,7 @@ button,input,textarea{max-width:100%}
 <body>
 <div class="phone" id="phone">
 <div class="screen" id="screen-home">
-<div class="header"><div><p class="greeting">Good day Thabiso</p><p class="total-label">TOTAL BALANCE</p><p class="total" id="totalBalance">R 0.00</p></div><div class="avatar">JR</div></div>
+<div class="header"><div><p class="greeting" id="greeting">Good day Thabiso</p><p class="total-label">TOTAL BALANCE</p><p class="total" id="totalBalance">R 0.00</p></div><div class="avatar">JR</div></div>
 
 <div class="actions">
 <button class="action-item" onclick="goTo('transfer')"><div class="action-icon">⇄</div><div class="action-label">Transfer</div></button>
@@ -252,6 +252,16 @@ function dismissCallPermission(){localStorage.setItem('undrilledCallPromptSeen',
 async function allowCallPermissionFromPopup(){localStorage.setItem('undrilledCallPromptSeen','1');document.getElementById('callPermissionModal').classList.add('hidden');await requestCallPermission()}
 function showFirstOpenCallPrompt(){if(!localStorage.getItem('undrilledCallPromptSeen'))document.getElementById('callPermissionModal').classList.remove('hidden')}
 renderHome();renderSecurity();showFirstOpenCallPrompt();document.getElementById('aiStatusText').textContent=scamAlertActive?'PAYMENTS BLOCKED':'READY';
+</script>
+<script>
+function updateGreeting(){
+  const hour=new Date().getHours();
+  const greeting=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+  const el=document.getElementById("greeting");
+  if(el) el.textContent=greeting+" Thabiso";
+}
+updateGreeting();
+setInterval(updateGreeting,60000);
 </script>
 </body>
 </html>
