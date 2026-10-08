@@ -97,7 +97,7 @@
 </div>
 </div>
 <div class="modal-overlay hidden" id="confirmModal"><div class="modal-card"><p class="modal-title">Confirm transfer</p><p class="modal-sub">Double-check the details before sending</p><div class="confirm-rows" id="confirmRows"></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeConfirm()">Cancel</button><button class="modal-btn confirm" onclick="startFaceScan()">Confirm with Face ID</button></div></div></div>
-<div class="modal-overlay hidden" id="faceModal"><div class="modal-card"><p class="modal-title">Verify it's you</p><p class="modal-sub">Face scan required to authorize this transfer</p><div class="face-ring scanning" id="faceRing">🙂</div><p class="face-status" id="faceStatus">Scanning face…</p><p style="font-size:10px;color:var(--muted);margin:10px 0 0">Press and hold the icon if this payment isn't voluntary.</p></div></div>
+<div class="modal-overlay hidden" id="faceModal"><div class="modal-card"><p class="modal-title">Face verification</p><p class="modal-sub">Look at the camera to continue the transfer</p><video class="face-camera scanning" id="faceCamera" autoplay playsinline muted></video><p class="face-status" id="faceStatus">Opening camera…</p><button class="modal-btn cancel" style="width:100%;margin-top:14px" onclick="cancelFaceScan()">Cancel transfer</button><p style="font-size:10px;color:var(--muted);margin:10px 0 0">Camera access is used only for this prototype's face-verification step.</p></div></div>
 <div class="tabbar"><button class="tab-btn active" data-tab="home" onclick="goTo('home')"><span class="tab-icon">⌂</span><span class="tab-text">Home</span></button><button class="tab-btn" data-tab="activity" onclick="goTo('activity')"><span class="tab-icon">☷</span><span class="tab-text">Activity</span></button><button class="tab-btn" data-tab="transfer" onclick="goTo('transfer')"><span class="tab-icon">⇄</span><span class="tab-text">Transfer</span></button><button class="tab-btn" data-tab="profile" onclick="goTo('profile')"><span class="tab-icon">◯</span><span class="tab-text">Profile</span></button></div>
 </div>
 <script>
@@ -142,7 +142,45 @@ document.getElementById('amountInput').addEventListener('input',checkAmount);doc
 function openConfirm(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient();if(amount<=0||amount>from.balance||!r.name)return;let label=methods.find(m=>m.id===transferMethod).label;document.getElementById('confirmRows').innerHTML=`<div class="confirm-row"><span class="k">From</span><span class="v">${from.name}</span></div><div class="confirm-row"><span class="k">To</span><span class="v">${r.name}</span></div><div class="confirm-row"><span class="k">Via</span><span class="v">${label}</span></div><div class="confirm-row"><span class="k">Amount</span><span class="v">${rand(amount)}</span></div>`;document.getElementById('confirmModal').classList.remove('hidden')}
 function closeConfirm(){document.getElementById('confirmModal').classList.add('hidden')}
 let holdTimer=null,holdTriggered=false;
-function startFaceScan(){closeConfirm();holdTriggered=false;let ring=document.getElementById('faceRing'),status=document.getElementById('faceStatus');ring.className='face-ring scanning';ring.textContent='🙂';status.textContent='Scanning face…';document.getElementById('faceModal').classList.remove('hidden');const start=()=>{holdTimer=setTimeout(()=>holdTriggered=true,1200)},cancel=()=>clearTimeout(holdTimer);ring.onpointerdown=start;ring.onpointerup=cancel;ring.onpointerleave=cancel;setTimeout(()=>{ring.onpointerdown=null;ring.onpointerup=null;ring.onpointerleave=null;ring.className='face-ring verified';ring.textContent='✓';status.textContent='Face verified';setTimeout(()=>{document.getElementById('faceModal').classList.add('hidden');holdTriggered?silentDuressBlock():finalizeSend()},700)},1500)}
+let faceStream=null;
+async function startFaceScan(){
+  closeConfirm();
+  const modal=document.getElementById('faceModal');
+  const video=document.getElementById('faceCamera');
+  const status=document.getElementById('faceStatus');
+  video.className='face-camera scanning';
+  status.textContent='Opening camera…';
+  modal.classList.remove('hidden');
+  try{
+    faceStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    video.srcObject=faceStream;
+    await video.play();
+    status.textContent='Position your face inside the circle…';
+    setTimeout(()=>{
+      if(!faceStream)return;
+      video.className='face-camera verified';
+      status.textContent='Face check complete';
+      setTimeout(()=>{
+        stopFaceCamera();
+        modal.classList.add('hidden');
+        finalizeSend();
+      },800);
+    },2200);
+  }catch(error){
+    status.textContent='Camera permission is required to continue.';
+    showToast('Camera access was not granted');
+  }
+}
+function stopFaceCamera(){
+  if(faceStream){faceStream.getTracks().forEach(t=>t.stop());faceStream=null;}
+  const video=document.getElementById('faceCamera');
+  if(video)video.srcObject=null;
+}
+function cancelFaceScan(){
+  stopFaceCamera();
+  document.getElementById('faceModal').classList.add('hidden');
+  showToast('Transfer cancelled');
+}
 function silentDuressBlock(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient();addSecurityLog('🚨 Duress signal detected during Face ID — transfer silently blocked and not sent.');document.getElementById('amountInput').value='';showToast('Transfer approved');goTo('home')}
 function finalizeSend(){let amount=checkAmount(),from=accounts.find(a=>a.id===fromId),r=currentRecipient(),label=methods.find(m=>m.id===transferMethod).label;if(amount<=0||amount>from.balance||!r.name)return;from.balance-=amount;transactions.unshift({id:'tx_'+Date.now(),accountId:from.id,merchant:r.name,category:transferMethod==='vault'?'Transfer':label,amount:-amount,date:'Just now'});document.getElementById('amountInput').value='';document.getElementById('recipientName').value='';document.getElementById('recipientPhone').value='';scamAlertActive=false;document.getElementById('aiStatusText').textContent='READY';showToast('Sent '+rand(amount)+' to '+r.name+' via '+label);renderHome();goTo('home')}
 let interpSource='en',interpTarget='zu';
